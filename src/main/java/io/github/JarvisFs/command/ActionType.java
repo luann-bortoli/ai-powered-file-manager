@@ -1,4 +1,10 @@
 package io.github.JarvisFs.command;
 
-public class ActionType {
+public enum ActionType {
+    CREATE_FOLDER,
+    CREATE_FILE,
+    DELETE,
+    RENAME,
+    LIST,
+    ERROR
 }
