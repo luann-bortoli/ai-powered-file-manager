@@ -23,7 +23,7 @@ public class CommandExecutor {
 
             case LIST -> fs.list(command.getName());
 
-            case ERROR -> System.out.println(command.getMessage());
+            case ERROR -> System.out.println("[-] " + command.getMessage());
 
         }
 

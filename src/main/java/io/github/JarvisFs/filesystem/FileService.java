@@ -18,12 +18,16 @@ public class FileService {
         Path folderPath = Paths.get(BASE_URL, name);
         Files.createDirectories(folderPath);
 
+        System.out.println("[+] Folder " + name + " created successfully!");
+
     }
 
     public void createFile(String name, String content) throws IOException{
 
         Path filePath = Paths.get(BASE_URL, name);
         Files.writeString(filePath, content, StandardOpenOption.CREATE);
+
+        System.out.println("[+] File " + name + " created successfully!");
 
     }
 
@@ -46,10 +50,14 @@ public class FileService {
                         }
                     });
 
+            System.out.println("[+] Folder " + name + " deleted successfully!");
+
             return;
         }
 
         Files.delete(filePath);
+
+        System.out.println("[+] File " + name + " deleted successfully!");
 
     }
 
@@ -63,6 +71,13 @@ public class FileService {
         }
 
         Files.move(currentPath, newPath, StandardCopyOption.REPLACE_EXISTING);
+
+        if(Files.isRegularFile(newPath)){
+            System.out.println("[+] File " + name + " renamed to " + newName + " successfully!");
+            return;
+        }
+
+        System.out.println("[+] Folder " + name + " renamed to " + newName + " successfully!");
 
     }
 

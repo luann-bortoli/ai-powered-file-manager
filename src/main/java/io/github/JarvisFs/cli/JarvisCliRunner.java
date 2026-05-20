@@ -27,13 +27,21 @@ public class JarvisCliRunner implements CommandLineRunner {
 
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("JarvisFs started.");
-        System.out.println("Type 'exit' to quit.");
+        System.out.println("""
+                    ╔══════════════════════════════╗
+                    ║         JarvisFs v0.1.0      ║
+                    ║  AI Powered File Assistant   ║
+                    ╚══════════════════════════════╝
+                    
+                    Type 'exit' to quit.
+                    
+                    """);
 
         while (true) {
 
             System.out.print("JarvisFs >> ");
             String input = scanner.nextLine();
+            System.out.println("Working on it...");
 
             if (input.equalsIgnoreCase("exit")){
                 System.out.println("JarvisFs terminated.");
@@ -44,17 +52,19 @@ public class JarvisCliRunner implements CommandLineRunner {
                 continue;
             }
 
-            try {
+            try
+            {
                 String jsonCommand = ollamaClient.interpret(input);
-
-                System.out.println(jsonCommand);
 
                 CommandRequest command = commandParser.parse(jsonCommand);
 
                 commandExecutor.executeCommand(command);
 
-            } catch (Exception e){
+            }
+            catch (Exception e)
+            {
                 System.out.println(e.getMessage());
+
             }
 
         }
