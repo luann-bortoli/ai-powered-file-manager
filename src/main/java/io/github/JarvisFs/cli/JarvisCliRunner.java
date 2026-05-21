@@ -41,7 +41,7 @@ public class JarvisCliRunner implements CommandLineRunner {
 
             System.out.print("JarvisFs >> ");
             String input = scanner.nextLine();
-            System.out.println("Working on it...");
+            System.out.println("\nWorking on it...\n");
 
             if (input.equalsIgnoreCase("exit")){
                 System.out.println("JarvisFs terminated.");

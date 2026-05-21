@@ -18,7 +18,7 @@ public class FileService {
         Path folderPath = Paths.get(BASE_URL, name);
         Files.createDirectories(folderPath);
 
-        System.out.println("[+] Folder " + name + " created successfully!");
+        System.out.println("[+] Folder " + name + " created successfully!\n");
 
     }
 
@@ -27,7 +27,7 @@ public class FileService {
         Path filePath = Paths.get(BASE_URL, name);
         Files.writeString(filePath, content, StandardOpenOption.CREATE);
 
-        System.out.println("[+] File " + name + " created successfully!");
+        System.out.println("[+] File " + name + " created successfully!\n");
 
     }
 
@@ -50,14 +50,14 @@ public class FileService {
                         }
                     });
 
-            System.out.println("[+] Folder " + name + " deleted successfully!");
+            System.out.println("[+] Folder " + name + " deleted successfully!\n");
 
             return;
         }
 
         Files.delete(filePath);
 
-        System.out.println("[+] File " + name + " deleted successfully!");
+        System.out.println("[+] File " + name + " deleted successfully!\n");
 
     }
 
@@ -73,11 +73,11 @@ public class FileService {
         Files.move(currentPath, newPath, StandardCopyOption.REPLACE_EXISTING);
 
         if(Files.isRegularFile(newPath)){
-            System.out.println("[+] File " + name + " renamed to " + newName + " successfully!");
+            System.out.println("[+] File " + name + " renamed to " + newName + " successfully!\n");
             return;
         }
 
-        System.out.println("[+] Folder " + name + " renamed to " + newName + " successfully!");
+        System.out.println("[+] Folder " + name + " renamed to " + newName + " successfully!\n");
 
     }
 
