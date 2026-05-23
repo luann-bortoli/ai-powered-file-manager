@@ -13,10 +13,29 @@ public class FileService {
 
     static String BASE_URL = "C:/JARVIS_SANDBOX";
 
+    public Path resolveSafePath(String input){
+
+        Path base = Paths.get(BASE_URL).normalize().toAbsolutePath();
+
+        Path targetPath = base
+                .resolve(input)
+                .normalize()
+                .toAbsolutePath();
+
+        if (!targetPath.startsWith(base)){
+            System.out.println("[-] Access outside default sandbox requested.");
+            throw new SecurityException("Access outside sandbox requested");
+        }
+
+        return targetPath;
+
+    };
+
     public void createFolder(String name) throws IOException{
 
-        Path folderPath = Paths.get(BASE_URL, name);
-        Files.createDirectories(folderPath);
+        Path targetPath = resolveSafePath(name);
+
+        Files.createDirectories(targetPath);
 
         System.out.println("[+] Folder " + name + " created successfully!\n");
 
@@ -24,8 +43,9 @@ public class FileService {
 
     public void createFile(String name, String content) throws IOException{
 
-        Path filePath = Paths.get(BASE_URL, name);
-        Files.writeString(filePath, content, StandardOpenOption.CREATE);
+        Path targetPath = resolveSafePath(name);
+
+        Files.writeString(targetPath, content, StandardOpenOption.CREATE);
 
         System.out.println("[+] File " + name + " created successfully!\n");
 
@@ -33,14 +53,14 @@ public class FileService {
 
     public void delete(String name) throws IOException{
 
-        Path filePath = Paths.get(BASE_URL, name);
+        Path targetPath = resolveSafePath(name);
 
-        if(Files.notExists(filePath)){
-            throw new RuntimeException("Path not found: " + filePath);
+        if(Files.notExists(targetPath)){
+            throw new RuntimeException("Path not found: " + targetPath);
         }
 
-        if(Files.isDirectory(filePath)){
-            Files.walk(filePath)
+        if(Files.isDirectory(targetPath)){
+            Files.walk(targetPath)
                     .sorted(Comparator.reverseOrder())
                     .forEach(path -> {
                         try {
@@ -55,7 +75,7 @@ public class FileService {
             return;
         }
 
-        Files.delete(filePath);
+        Files.delete(targetPath);
 
         System.out.println("[+] File " + name + " deleted successfully!\n");
 
@@ -63,8 +83,9 @@ public class FileService {
 
     public void rename(String name, String newName) throws IOException{
 
-        Path currentPath = Paths.get(BASE_URL, name);
-        Path newPath = Paths.get(BASE_URL, newName);
+        Path currentPath = resolveSafePath(name);
+
+        Path newPath = resolveSafePath(newName);
 
         if(Files.notExists(currentPath)){
             throw new RuntimeException("Path not found: " + currentPath);
@@ -83,16 +104,16 @@ public class FileService {
 
     public void list(String name){
 
-        if(Files.isRegularFile(Path.of(name))) {
-            System.out.println(name);
+        Path targetPath = resolveSafePath(name);
+
+        if(Files.isRegularFile(targetPath)) {
+            System.out.println(targetPath.getFileName());
             return;
         }
 
-        Path folderPath = Paths.get(BASE_URL, name);
-
         try {
 
-            Files.walk(folderPath)
+            Files.walk(targetPath)
                     .forEach(path -> {
                         System.out.println(path.getFileName());
                     });
