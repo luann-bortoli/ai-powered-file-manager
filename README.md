@@ -21,6 +21,7 @@ JarvisFS is an experimental backend project focused on integrating local AI mode
 - Recursive delete support
 - Spring Boot architecture
 - Local-first execution
+- Logs
 
 ---
 
