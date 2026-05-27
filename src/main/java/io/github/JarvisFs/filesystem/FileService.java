@@ -13,8 +13,11 @@ public class FileService {
 
     static String BASE_URL = "C:/JARVIS_SANDBOX";
 
+<<<<<<< HEAD
     private static final Logger logger = LoggerFactory.getLogger(FileService.class);
 
+    public Path resolveSafePath(String input){
+=======
     public Path resolveSafePath(String input){
 
         Path base = Paths.get(BASE_URL).normalize().toAbsolutePath();
@@ -26,11 +29,65 @@ public class FileService {
 
         if (!targetPath.startsWith(base)){
             System.out.println("[-] Access outside default sandbox requested.");
+            throw new SecurityException("Access outside sandbox requested");
+        }
+
+        return targetPath;
+
+    };
+
+    public void createFolder(String name) throws IOException{
+
+        Path targetPath = resolveSafePath(name);
+
+        Files.createDirectories(targetPath);
+>>>>>>> b145a293c2c69805308563256a570d6573a9c0e5
+
+        Path base = Paths.get(BASE_URL).normalize().toAbsolutePath();
+
+        Path targetPath = base
+                .resolve(input)
+                .normalize()
+                .toAbsolutePath();
+
+<<<<<<< HEAD
+        if (!targetPath.startsWith(base)){
+            System.out.println("[-] Access outside default sandbox requested.");
             logger.warn("Access outside default sandbox requested.");
             throw new SecurityException("Access outside sandbox requested");
         }
 
         return targetPath;
+=======
+    public void createFile(String name, String content) throws IOException{
+
+        Path targetPath = resolveSafePath(name);
+
+        Files.writeString(targetPath, content, StandardOpenOption.CREATE);
+
+        System.out.println("[+] File " + name + " created successfully!\n");
+
+    }
+
+    public void delete(String name) throws IOException{
+
+        Path targetPath = resolveSafePath(name);
+
+        if(Files.notExists(targetPath)){
+            throw new RuntimeException("Path not found: " + targetPath);
+        }
+
+        if(Files.isDirectory(targetPath)){
+            Files.walk(targetPath)
+                    .sorted(Comparator.reverseOrder())
+                    .forEach(path -> {
+                        try {
+                            Files.delete(path);
+                        } catch (IOException e){
+                            System.out.println(e.getMessage());
+                        }
+                    });
+>>>>>>> b145a293c2c69805308563256a570d6573a9c0e5
 
     }
 
@@ -121,9 +178,13 @@ public class FileService {
             return;
         }
 
+<<<<<<< HEAD
         try
         {
             Files.delete(targetPath);
+=======
+        Files.delete(targetPath);
+>>>>>>> b145a293c2c69805308563256a570d6573a9c0e5
 
             System.out.println("[+] File " + name + " deleted successfully!\n");
             logger.info("File deleted successfully: {}", name);
@@ -139,8 +200,11 @@ public class FileService {
 
     public void rename(String name, String newName){
 
+<<<<<<< HEAD
         logger.info("Renaming file/folder: {}", name);
 
+=======
+>>>>>>> b145a293c2c69805308563256a570d6573a9c0e5
         Path currentPath = resolveSafePath(name);
 
         Path newPath = resolveSafePath(newName);
@@ -167,12 +231,16 @@ public class FileService {
 
     public void list(String name){
 
+<<<<<<< HEAD
         logger.info("Listing files: {}", name);
 
+=======
+>>>>>>> b145a293c2c69805308563256a570d6573a9c0e5
         Path targetPath = resolveSafePath(name);
 
         if(Files.isRegularFile(targetPath)) {
             System.out.println(targetPath.getFileName());
+<<<<<<< HEAD
             logger.info("File {} listed successfully!\n", name);
             return;
         }
@@ -180,6 +248,14 @@ public class FileService {
         try (var paths = Files.walk(targetPath)){
 
                 paths
+=======
+            return;
+        }
+
+        try {
+
+            Files.walk(targetPath)
+>>>>>>> b145a293c2c69805308563256a570d6573a9c0e5
                     .forEach(path -> {
                         System.out.println(path.getFileName());
                     });
