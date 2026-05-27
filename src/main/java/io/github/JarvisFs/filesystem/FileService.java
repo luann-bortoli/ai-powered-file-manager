@@ -1,7 +1,7 @@
 package io.github.JarvisFs.filesystem;
 
-import io.github.JarvisFs.ai.dto.OllamaResponse;
-import io.github.JarvisFs.command.ActionType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -13,93 +13,182 @@ public class FileService {
 
     static String BASE_URL = "C:/JARVIS_SANDBOX";
 
-    public void createFolder(String name) throws IOException{
+    private static final Logger logger = LoggerFactory.getLogger(FileService.class);
 
-        Path folderPath = Paths.get(BASE_URL, name);
-        Files.createDirectories(folderPath);
+    public Path resolveSafePath(String input){
 
-        System.out.println("[+] Folder " + name + " created successfully!\n");
+        Path base = Paths.get(BASE_URL).normalize().toAbsolutePath();
 
-    }
+        Path targetPath = base
+                .resolve(input)
+                .normalize()
+                .toAbsolutePath();
 
-    public void createFile(String name, String content) throws IOException{
-
-        Path filePath = Paths.get(BASE_URL, name);
-        Files.writeString(filePath, content, StandardOpenOption.CREATE);
-
-        System.out.println("[+] File " + name + " created successfully!\n");
-
-    }
-
-    public void delete(String name) throws IOException{
-
-        Path filePath = Paths.get(BASE_URL, name);
-
-        if(Files.notExists(filePath)){
-            throw new RuntimeException("Path not found: " + filePath);
+        if (!targetPath.startsWith(base)){
+            System.out.println("[-] Access outside default sandbox requested.");
+            logger.warn("Access outside default sandbox requested.");
+            throw new SecurityException("Access outside sandbox requested");
         }
 
-        if(Files.isDirectory(filePath)){
-            Files.walk(filePath)
-                    .sorted(Comparator.reverseOrder())
-                    .forEach(path -> {
-                        try {
-                            Files.delete(path);
-                        } catch (IOException e){
-                            System.out.println(e.getMessage());
-                        }
-                    });
+        return targetPath;
 
-            System.out.println("[+] Folder " + name + " deleted successfully!\n");
+    }
+
+    public void createFolder(String name){
+
+        logger.info("Creating folder: {}", name);
+
+        Path targetPath = resolveSafePath(name);
+
+        try
+        {
+            Files.createDirectories(targetPath);
+
+            System.out.println("[+] Folder " + name + " created successfully!\n");
+            logger.info("Folder created successfully: {}", name);
+
+        } catch (IOException e){
+
+            System.out.println("Error creating folder: " + e.getMessage());
+            logger.error("Error creating folder: {}", name, e);
+
+        }
+    }
+
+    public void createFile(String name, String content){
+
+        logger.info("Creating file: {}", name);
+
+        Path targetPath = resolveSafePath(name);
+
+        try
+        {
+            Files.writeString(targetPath, content, StandardOpenOption.CREATE);
+
+            System.out.println("[+] File " + name + " created successfully!\n");
+            logger.info("File created successfully: {}", name);
+
+        } catch (IOException e){
+
+            System.out.println("Error creating file: " + e.getMessage());
+            logger.error("Error creating file: {}", name, e);
+
+        }
+
+
+    }
+
+    public void delete(String name){
+
+        logger.info("Deleting file/folder: {}", name);
+
+        Path targetPath = resolveSafePath(name);
+
+        if(Files.notExists(targetPath)){
+            logger.error("Path not found : {}", targetPath);
+            throw new RuntimeException("Path not found: " + targetPath);
+        }
+
+        if(Files.isDirectory(targetPath)) {
+
+            try (var paths = Files.walk(targetPath)){
+
+                    paths
+                        .sorted(Comparator.reverseOrder())
+                        .forEach(path -> {
+                            try {
+
+                                Files.delete(path);
+
+                            } catch (IOException e) {
+
+                                System.out.println(e.getMessage());
+                                logger.error("Error deleting file: {}", path, e);
+
+                            }
+                        });
+
+                System.out.println("[+] Folder " + name + " deleted successfully!\n");
+                logger.info("Folder deleted successfully: {}", name);
+
+            } catch (IOException e) {
+
+                System.out.println("Error deleting file: " + e.getMessage());
+                logger.error("Error deleting file: {}", name, e);
+
+            }
 
             return;
         }
 
-        Files.delete(filePath);
+        try
+        {
+            Files.delete(targetPath);
 
-        System.out.println("[+] File " + name + " deleted successfully!\n");
+            System.out.println("[+] File " + name + " deleted successfully!\n");
+            logger.info("File deleted successfully: {}", name);
+
+        } catch (IOException e){
+
+            System.out.println("Error deleting file: " + e.getMessage());
+            logger.info("Error deleting file: {}", e.getMessage());
+
+        }
 
     }
 
-    public void rename(String name, String newName) throws IOException{
+    public void rename(String name, String newName){
 
-        Path currentPath = Paths.get(BASE_URL, name);
-        Path newPath = Paths.get(BASE_URL, newName);
+        logger.info("Renaming file/folder: {}", name);
+
+        Path currentPath = resolveSafePath(name);
+
+        Path newPath = resolveSafePath(newName);
 
         if(Files.notExists(currentPath)){
+            logger.error("Path not found : {}", currentPath);
             throw new RuntimeException("Path not found: " + currentPath);
         }
 
-        Files.move(currentPath, newPath, StandardCopyOption.REPLACE_EXISTING);
+        try
+        {
+            Files.move(currentPath, newPath, StandardCopyOption.REPLACE_EXISTING);
 
-        if(Files.isRegularFile(newPath)){
             System.out.println("[+] File " + name + " renamed to " + newName + " successfully!\n");
-            return;
+            logger.info("File {} renamed successfully to: {}", name, newName);
+
+        } catch (IOException e){
+
+            System.out.println("Error renaming file: " + e.getMessage());
+            logger.error("Error renaming file: {}", e.getMessage());
+
         }
-
-        System.out.println("[+] Folder " + name + " renamed to " + newName + " successfully!\n");
-
     }
 
     public void list(String name){
 
-        if(Files.isRegularFile(Path.of(name))) {
-            System.out.println(name);
+        logger.info("Listing files: {}", name);
+
+        Path targetPath = resolveSafePath(name);
+
+        if(Files.isRegularFile(targetPath)) {
+            System.out.println(targetPath.getFileName());
+            logger.info("File {} listed successfully!\n", name);
             return;
         }
 
-        Path folderPath = Paths.get(BASE_URL, name);
+        try (var paths = Files.walk(targetPath)){
 
-        try {
-
-            Files.walk(folderPath)
+                paths
                     .forEach(path -> {
                         System.out.println(path.getFileName());
                     });
+            logger.info("Folder {} listed successfully!\n", name);
 
         } catch (IOException e){
 
             System.out.println(e.getMessage());
+            logger.error("Error in listing files : {}", e.getMessage());
 
         }
     }

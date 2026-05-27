@@ -1,0 +1,8 @@
+2026-05-27T20:31:14.344-03:00  INFO 10680 --- [JarvisFs] [main] io.github.JarvisFs.JarvisFsApplication   : Starting JarvisFsApplication using Java 23.0.1 with PID 10680 (C:\Users\211255\Desktop\JarvisFs\target\classes started by 211255 in C:\Users\211255\Desktop\JarvisFs)
+2026-05-27T20:31:14.348-03:00 DEBUG 10680 --- [JarvisFs] [main] io.github.JarvisFs.JarvisFsApplication   : Running with Spring Boot v3.3.0, Spring v6.1.8
+2026-05-27T20:31:14.348-03:00  INFO 10680 --- [JarvisFs] [main] io.github.JarvisFs.JarvisFsApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-05-27T20:31:15.230-03:00  INFO 10680 --- [JarvisFs] [main] io.github.JarvisFs.JarvisFsApplication   : Started JarvisFsApplication in 1.36 seconds (process running for 1.725)
+2026-05-27T20:32:03.720-03:00  INFO 10680 --- [JarvisFs] [main] i.g.JarvisFs.filesystem.FileService      : Creating folder: git
+2026-05-27T20:32:03.720-03:00  INFO 10680 --- [JarvisFs] [main] i.g.JarvisFs.filesystem.FileService      : Folder created successfully: git
+2026-05-27T20:32:20.683-03:00  INFO 10680 --- [JarvisFs] [main] i.g.JarvisFs.filesystem.FileService      : Creating file: git/hub.txt
+2026-05-27T20:32:20.683-03:00  INFO 10680 --- [JarvisFs] [main] i.g.JarvisFs.filesystem.FileService      : File created successfully: git/hub.txt
